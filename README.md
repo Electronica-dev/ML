@@ -1,4 +1,5 @@
-# Micrograd
+# Machine Learning
+## Micrograd
 - neural networks
 - backpropogation
 - loss function
