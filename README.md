@@ -5,3 +5,6 @@
 - loss function
 - gradient descent
 - two-layer perceptron
+
+## Makemore
+- TBD
