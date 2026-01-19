@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "gpt"
+version = "0.1.0"
+description = "trying out what the GPT hype is all about"
+authors = ["Electronica-dev <srsamartha@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.15"
+torch = "^2.9.1"
+ipykernel = "^7.1.0"
+matplotlib = "^3.10.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
