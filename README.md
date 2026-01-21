@@ -7,8 +7,10 @@
 - two-layer perceptron
 
 ## Makemore
-- bigram model
-- trigram model
+- bigram
+- trigram
+- BatchNorm
+- diagnostic tools/visualizations
 - manual backpropagation of layers
 - wavenet
 
