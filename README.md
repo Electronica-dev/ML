@@ -1,12 +1,12 @@
 # Machine Learning
-## Micrograd
+## micrograd
 - neural networks
 - backpropogation
 - loss function
 - gradient descent
 - two-layer perceptron
 
-## Makemore
+## makemore
 - bigram
 - trigram
 - BatchNorm
@@ -14,5 +14,5 @@
 - manual backpropagation of layers
 - wavenet
 
-## Smol GPT
+## GPT/smol-gpt
 - TBD
