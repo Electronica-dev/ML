@@ -101,6 +101,46 @@ class MultiHeadAttention(nn.Module):
 	def forward(self, x):
 		return torch.cat([h(x) for h in self.heads], dim=-1)
 
+
+# What does a FFN do?
+
+# Enabling Complex Patterns: In neural networks, linear operations (like matrix
+# multiplications: Wx + b) can only learn straight-line relationships. However,
+# real-world data, such as text, images, or speech, has incredibly complex,
+# non-linear patterns. Without non-linearity, no matter how many linear layers
+# you stack, they would effectively collapse into a single linear transformation,
+# severely limiting the network's ability to learn intricate features. Non-linear
+# activation functions introduce "curves" into the network's decision boundaries,
+# allowing it to model these complex relationships.
+
+# Adding Expressive Power: Each linear layer computes a weighted sum of its inputs.
+# By applying a non-linear activation function, the output of that layer is
+# transformed in a non-linear way. This transformation allows subsequent layers to
+# learn progressively more abstract and hierarchical features. For instance, in
+# image processing, early layers might learn simple features like edges, while
+# later layers (enabled by non-linearities) could combine these into shapes, and
+# finally, objects.
+
+# Controlling Information Flow and Conditional Decisions: Activation functions like
+# ReLU (max(0, x)) are particularly good at this. They can "turn off" neurons by
+# outputting zero for negative inputs. This effectively introduces conditional logic
+# into the network, allowing it to learn which information is relevant and should
+# flow forward, and which should be suppressed. For example, a neuron might activate
+# strongly only when certain features are present, and remain silent otherwise.
+
+class FeedForward(nn.Module):
+	""" a simple linear layer followed by a non-linearity """
+
+	def __init__(self, n_embd):
+		super().__init__()
+		self.net = nn.Sequential(
+			nn.Linear(n_embd, n_embd),
+			nn.ReLU()
+		)
+
+	def forward(self, x):
+		return self.net(x)
+
 class BigramLanguageModel(nn.Module):
 	def __init__(self):
 		super().__init__()
@@ -108,6 +148,7 @@ class BigramLanguageModel(nn.Module):
 		self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
 		self.position_embedding_table = nn.Embedding(block_size, n_embd)
 		self.sa_heads = MultiHeadAttention(4, n_embd//4) # 4 heads of 8-dimentsional self-attention
+		self.ffwd = FeedForward(n_embd)
 		self.lm_head = nn.Linear(n_embd, vocab_size)
 
 	def forward(self, idx, targets=None):
@@ -117,7 +158,8 @@ class BigramLanguageModel(nn.Module):
 		tok_emb = self.token_embedding_table(idx) # (B, T, C)
 		pos_emb = self.position_embedding_table(torch.arange(T, device=device)) # (T, C)
 		x = tok_emb + pos_emb # (B, T, C)
-		x = self.sa_heads(x) # apply one head of self-attention. (B, T, C)
+		x = self.sa_heads(x) # communication: apply one head of self-attention. (B, T, C)
+		x = self.ffwd(x) # computation: per-token (B, T, C)
 		logits = self.lm_head(x)  # (B, T, vocab_size)
 
 		if targets is None:
