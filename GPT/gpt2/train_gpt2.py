@@ -60,11 +60,11 @@ class Block(nn.Module):
 
 @dataclass
 class GPTConfig:
-    block_size: int = 256
-    vocab_size: int = 65
-    n_layer: int = 6
-    n_head: int = 6
-    n_embd: int = 384
+    block_size: int = 1024 # max sequence length (context)
+    vocab_size: int = 50257 # no. of tokens: 50k BPE merges + 256 byte tokens + 1 <|endoftext|>
+    n_layer: int = 12 # no. of layers
+    n_head: int = 12 # no. of heads
+    n_embd: int = 768 # embedding dimension
 
 class GPT(nn.Module):
 
