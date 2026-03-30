@@ -92,6 +92,24 @@ class GPT(nn.Module):
         ))
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
 
+    def forward(self, idx):
+        # idx (token indices) is of shape (B, T)
+        B, T = idx.size()
+        assert T <= self.config.block_size, f"Cannot forward sequence of length {t}, block size is only {self.block_size}"
+        pos = torch.arange(0, T, dtype=torch.long, device=idx.device) # shape (T)
+
+        # forward the GPT model itself
+        tok_emb = self.transformer.wte(idx) # token embeddings of shape (B, T, n_embd)
+        pos_emb = self.transformer.wpe(pos) # position embeddings of shape (1, T, n_embd)
+        x = tok_emb + pos_emb
+        for block in self.transformer.h:
+            x = block(x)
+
+        # forward the final layernorm and the classifier
+        x = self.transformer.ln_f(x)
+        logits = self.lm_head(x) # (B, T, vocab_size)
+        return logits
+
     @classmethod
     def from_pretrained(cls, model_type):
         """Lodas pretrained GPT-2 model weights from HF"""
